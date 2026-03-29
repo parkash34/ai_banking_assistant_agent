@@ -145,3 +145,7 @@ API_KEY=your_groq_api_key_here
 - Test accounts are hardcoded — no real database
 - Conversation history resets when server restarts
 ```
+
+## 👤 Author
+
+**Ohm Parkash** — [LinkedIn](https://www.linkedin.com/in/om-parkash34/) · [GitHub](https://github.com/parkash34)

@@ -143,11 +143,6 @@ API_KEY=your_groq_api_key_here
 
 - Never commit your .env file to GitHub
 - Test accounts are hardcoded — no real database
-<<<<<<< HEAD
-- Conversation history resets when server restarts
-=======
-- Conversation history resets when the server restarts
->>>>>>> b89d54e4df99dfaa423ff6177995912a0903164d
 
 ## 👤 Author
 

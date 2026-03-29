@@ -30,7 +30,7 @@ with full identity verification before any financial transaction.
 ```
 securebank-agent/
 │
-├── env/               
+├── .venv/               
 ├── main.py            
 ├── .env               
 └── requirements.txt   
@@ -45,8 +45,8 @@ git clone https://github.com/yourusername/securebank-agent
 
 2. Create and activate virtual environment
 ```
-python -m venv env
-env\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
 3. Install dependencies

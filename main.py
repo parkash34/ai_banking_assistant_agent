@@ -10,7 +10,7 @@ load_dotenv()
 
 api_key = os.getenv("API_KEY")
 if not api_key:
-    raise ValueError("API Key is missing in env file")
+    raise ValueError("API Key is missing in .env file")
 
 app = FastAPI()
 memory = {}
@@ -46,8 +46,8 @@ def system_prompt():
     {{
         "category" : "check balance",
         "status" : "success",
-        "message" : "Your current balance is 2278.00 euros.",
-        "data" : 2278.00 euros
+        "message" : "Your current balance is 2298.00 euros.",
+        "data" : 2298.00 euros
     }}
 
     User = How can I transfer money from this account to my new account?

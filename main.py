@@ -163,7 +163,7 @@ tools = [
                         "description": "amount like e.g. 434"
                     }
                 },
-                "required": ["from_number", "to_number","amount"]
+                "required": ["from_account", "to_account","amount"]
             }
         }
     },
@@ -204,6 +204,7 @@ tools = [
         }
     }
 ]
+
 
 def verify_account(account_number, pin):
     if account_number not in database:
@@ -249,4 +250,111 @@ def get_account_info(account_number):
         return "Account doesn't exist"
     return f"""Name : {database[account_number]["name"]}\n
                Balance : ${database[account_number]["balance"]:.2f}"""
+
+
+def ask_ai(chat_history):
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json = {
+                "model": "llama-3.3-70b-versatile",
+                "temperature" : 0.3,
+                "max_tokens" : 500,
+                "messages" : [
+                    {"role" : "system", "content" : system_prompt()},
+                    *chat_history
+                ],
+                "tools" : tools,
+                "tool_choice" : "auto"
+            },
+            timeout=10
+        )
+
+        response.raise_for_status()
+        message = response.json()["choices"][0]["message"]
+
+        if message.get("tool_calls"):
+            tool_call = message["tool_calls"][0]
+            function_name = tool_call["function"]["name"]
+            arguments = json.loads(tool_call["function"]["arguments"])
+
+
+            if function_name == "verify_account":
+                result = verify_account(**arguments)
+            elif function_name == "check_balance":
+                result = check_balance(**arguments)
+            elif function_name == "transfer_money":
+                arguments["amount"] = int(arguments["amount"])
+                result = transfer_money(**arguments)
+            elif function_name == "view_transactions":
+                result = view_transactions(**arguments)
+            elif function_name == "get_account_info":
+                result = get_account_info(**arguments)
+            else:
+                result = "Function not found"
+
+            chat_history.append(message)
+            chat_history.append({
+                "role" : "tool",
+                "tool_call_id" : tool_call["id"],
+                "content": result
+            })
+
+
+            final_response = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json = {
+                    "model": "llama-3.3-70b-versatile",
+                    "temperature" : 0.3,
+                    "max_tokens" : 500,
+                    "messages" : [
+                        {"role" : "system", "content" : system_prompt()},
+                        *chat_history
+                    ],
+                    "tools" : tools,
+                    "tool_choice" : "auto"
+                },
+                timeout=10
+            )
+            final_response.raise_for_status()
+            raw = final_response.json()["choices"][0]["message"]["content"]
+            return {"reply" : json.loads(raw)}
+        content = message["content"]
+        try:
+            return {"reply" : json.loads(content)}
+        except json.JSONDecodeError:
+            return {"reply" : content}
+    except requests.exceptions.Timeout:
+        return "Time out! Please try again."
+    except requests.exceptions.ConnectionError:
+        return "Connection Error! Please check your network."
+    except requests.exceptions.HTTPError as e:
+        return f"API Error {e.response.status_code}"
+    except Exception as e:
+        return f"Something went wrong! {str(e)}"
+    
+
+@app.post("/bank")
+def bank_chat(message : Message):
+    if not message.session_id:
+        return "Session ID is missing"
+    if not message.message:
+        return "Please type something before sending it."
+    
+    session_id = message.session_id
+    user_message = message.message
+
+    if session_id not in memory:
+        memory[session_id] = []
+    
+    memory[session_id].append({"role" : "user", "content" : user_message})
+    ai_reply = ask_ai(memory[session_id])
+
+    if isinstance(ai_reply, dict) and "reply" in ai_reply:
+        memory[session_id].append({"role" : "assistant", "content" : json.dumps(ai_reply["reply"])})
+
+    return ai_reply
+    
 

@@ -7,12 +7,12 @@ with full identity verification before any financial transaction.
 ## Features
 
 - Identity verification — PIN and account number validation before any action
-- Balance checking — real time account balance retrieval
+- Balance checking — real-time account balance retrieval
 - Money transfers — with full validation and transfer limits
 - Transaction history — last 5 transactions displayed clearly
 - Account information — secure account details retrieval
 - Structured JSON responses — consistent format for all replies
-- Multi-session memory — each customer has separate conversation history
+- Multi-session memory — each customer has a separate conversation history
 - Comprehensive error handling — wrong PIN, insufficient balance, invalid accounts
 
 ## Tech Stack
@@ -30,7 +30,7 @@ with full identity verification before any financial transaction.
 ```
 securebank-agent/
 │
-├── env/               
+├── .venv/               
 ├── main.py            
 ├── .env               
 └── requirements.txt   
@@ -43,10 +43,10 @@ securebank-agent/
 git clone https://github.com/yourusername/securebank-agent
 ```
 
-2. Create and activate virtual environment
+2. Create and activate a virtual environment
 ```
-python -m venv env
-env\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
 3. Install dependencies
@@ -54,7 +54,7 @@ env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Create `.env` file and add your Groq API key
+4. Create a `.env` file and add your Groq API key
 ```
 API_KEY=your_groq_api_key_here
 ```
@@ -103,13 +103,13 @@ uvicorn main:app --reload
 - Identity must be verified before any banking action
 - PIN is never exposed in any response
 - Customer information is never shared across sessions
-- Only banking related questions are answered
+- Only banking-related questions are answered
 
 ## Transfer Limits
 
 - Minimum transfer: $1
 - Maximum transfer: $10,000
-- Cannot transfer to same account
+- Cannot transfer to the same account
 
 ## Test Accounts
 ```
@@ -119,7 +119,7 @@ Account: ACC002 | PIN: 5678 | Balance: $3000.00
 
 ## How It Works
 ```
-Customer sends message
+Customer sends a message
 ↓
 AI decides which banking tool to call
 ↓
@@ -129,7 +129,7 @@ Python executes the banking function
 ↓
 Result sent back to AI with tool role
 ↓
-AI generates natural friendly response
+AI generates a natural, friendly response
 ↓
 Customer receives structured JSON reply
 ```
@@ -143,7 +143,7 @@ API_KEY=your_groq_api_key_here
 
 - Never commit your .env file to GitHub
 - Test accounts are hardcoded — no real database
-- Conversation history resets when server restarts
+- Conversation history resets when the server restarts
 
 ## 👤 Author
 
